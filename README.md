@@ -1,4 +1,4 @@
-# 2022_PEOO_T1
+# 2023_PSPI_T1
 
 - Aluno: Lucas de Lima Nunes Fernandes
 - Turma: Informática Para Internet - 2 Ano
