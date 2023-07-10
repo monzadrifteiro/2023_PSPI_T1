@@ -8,29 +8,33 @@ using System.Data.Entity;
 using System.Net;
 using System.IO;
 using Modelo.Cadastros;
+using Servico.Cadastros;
+using Servico.Tabelas;
 
 namespace WebAppProjeto2023.Controllers
 {
     public class ProdutosController : Controller
     {
-        private EFContext context = new EFContext();
+        //private EFContext context = new EFContext();
+        private ProdutoServico produtoServico = new ProdutoServico();
+        private CategoriaServico categoriaServico = new CategoriaServico();
+        private FabricanteServico fabricanteServico = new FabricanteServico();
 
         // GET: Produtos
         public ActionResult Index()
         {
-            var produtos = context.Produtos.Include(c => c.Categoria).Include(f => f.Fabricante).OrderBy(n => n.Nome);
-            return View(produtos);
+            //var produtos = context.Produtos.Include(c => c.Categoria).Include(f => f.Fabricante).OrderBy(n => n.Nome);
+            //return View(produtos);
+            return View(produtoServico.ObterProdutosClassificadosPorNome());
         }
 
-        // GET: Produtos/Details/5
-        public ActionResult Details(long? id)
+        private ActionResult ObterVisaoProdutoPorId(long? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Produto produto = context.Produtos.Where(p => p.ProdutoId == id).
-            Include(c => c.Categoria).Include(f => f.Fabricante).First();
+            Produto produto = produtoServico.ObterProdutoPorId((long)id);
             if (produto == null)
             {
                 return HttpNotFound();
@@ -38,11 +42,16 @@ namespace WebAppProjeto2023.Controllers
             return View(produto);
         }
 
+        // GET: Produtos/Details/5
+        public ActionResult Details(long? id)
+        {
+            return ObterVisaoProdutoPorId(id); ;
+        }
+
         // GET: Produtos/Create
         public ActionResult Create()
         {
-            ViewBag.CategoriaId = new SelectList(context.Categorias.OrderBy(b => b.Nome), "CategoriaId", "Nome");
-            ViewBag.FabricanteId = new SelectList(context.Fabricantes.OrderBy(b => b.Nome), "FabricanteId", "Nome");
+            PopularViewBag();
             return View();
         }
 
@@ -52,10 +61,7 @@ namespace WebAppProjeto2023.Controllers
         {
             try
             {
-                // TODO: Add insert logic here
-                context.Produtos.Add(produto);
-                context.SaveChanges();
-                return RedirectToAction("Index");
+                return GravarProduto(produto);
             }
             catch
             {
@@ -66,18 +72,8 @@ namespace WebAppProjeto2023.Controllers
         // GET: Produtos/Edit/5
         public ActionResult Edit(long? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Produto produto = context.Produtos.Find(id);
-            if (produto == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.CategoriaId = new SelectList(context.Categorias.OrderBy(b => b.Nome), "CategoriaId", "Nome", produto.CategoriaId);
-            ViewBag.FabricanteId = new SelectList(context.Fabricantes.OrderBy(b => b.Nome), "FabricanteId", "Nome", produto.FabricanteId);
-            return View(produto);
+            PopularViewBag(produtoServico.ObterProdutoPorId((long)id));
+            return ObterVisaoProdutoPorId(id);
         }
 
         private byte[] SetLogotipo(HttpPostedFileBase logotipo)
@@ -87,23 +83,53 @@ namespace WebAppProjeto2023.Controllers
             return bytesLogotipo;
         }
 
+        // Metodo Privado
         private void PopularViewBag(Produto produto = null)
         {
-            ViewBag.CategoriaId = new SelectList(context.Categorias.OrderBy(b => b.Nome), "CategoriaId", "Nome", produto.CategoriaId);
-            ViewBag.FabricanteId = new SelectList(context.Fabricantes.OrderBy(b => b.Nome), "FabricanteId", "Nome", produto.FabricanteId);
-        }
-
-        public void GravarProduto(Produto produto)
-        {
-            if (produto.ProdutoId == null)
+            if (produto == null)
             {
-                context.Produtos.Add(produto);
+                ViewBag.CategoriaId = new SelectList(categoriaServico.ObterCategoriasClassificadasPorNome(),
+                "CategoriaId", "Nome");
+                ViewBag.FabricanteId = new SelectList(fabricanteServico.ObterFabricantesClassificadosPorNome(),
+                "FabricanteId", "Nome");
             }
             else
             {
-                context.Entry(produto).State = EntityState.Modified;
+                ViewBag.CategoriaId = new SelectList(categoriaServico.ObterCategoriasClassificadasPorNome(),
+                "CategoriaId", "Nome", produto.CategoriaId);
+                ViewBag.FabricanteId = new SelectList(fabricanteServico.ObterFabricantesClassificadosPorNome(),
+                "FabricanteId", "Nome", produto.FabricanteId);
             }
-            context.SaveChanges();
+        }
+
+        /*        public void GravarProduto(Produto produto)
+                {
+                    if (produto.ProdutoId == null)
+                    {
+                        context.Produtos.Add(produto);
+                    }
+                    else
+                    {
+                        context.Entry(produto).State = EntityState.Modified;
+                    }
+                    context.SaveChanges();
+                }
+        */
+        private ActionResult GravarProduto(Produto produto)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    produtoServico.GravarProduto(produto);
+                    return RedirectToAction("Index");
+                }
+                return View(produto);
+            }
+            catch
+            {
+                return View(produto);
+            }
         }
 
         private ActionResult GravarProduto(Produto produto, HttpPostedFileBase logotipo, string chkRemoverImagem)
@@ -142,8 +168,7 @@ namespace WebAppProjeto2023.Controllers
 
         public ActionResult DownloadArquivo(long id)
         {
-            // Produto produto = produtoServico.ObterProdutoPorId(id);
-            Produto produto = ObterProdutoPorId(id);
+            Produto produto = produtoServico.ObterProdutoPorId(id);
             FileStream fileStream = new FileStream(Server.MapPath("~/App_Data/" + produto.NomeArquivo), FileMode.Create, FileAccess.Write);
             fileStream.Write(produto.Logotipo, 0,
             Convert.ToInt32(produto.TamanhoArquivo));
@@ -153,8 +178,7 @@ namespace WebAppProjeto2023.Controllers
 
         public ActionResult DownloadArquivo2(long id)
         {
-            //Produto produto = produtoServico.ObterProdutoPorId(id);
-            Produto produto = ObterProdutoPorId(id);
+            Produto produto = produtoServico.ObterProdutoPorId(id);
             FileStream fileStream = new FileStream(Server.MapPath("~/App_Data/" + produto.NomeArquivo), FileMode.Open, FileAccess.Read);
             return File(fileStream.Name, produto.LogotipoMimeType, produto.NomeArquivo);
         }
@@ -164,33 +188,13 @@ namespace WebAppProjeto2023.Controllers
         public ActionResult Edit(Produto produto, HttpPostedFileBase logotipo = null, string chkRemoverImagem = null)
         {
             return GravarProduto(produto, logotipo, chkRemoverImagem);
-            /*
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    context.Entry(produto).State = EntityState.Modified;
-                    context.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-                return View(produto);
-            }
-            catch
-            {
-                return View(produto);
-            }
-            */
-        }
-
-        public Produto ObterProdutoPorId(long id)
-        {
-            return context.Produtos.Where(p => p.ProdutoId == id).Include(c => c.Categoria).Include(f => f.Fabricante).First();
+            //return GravarProduto(produto);
         }
 
         public FileContentResult GetLogotipo(long id)
         {
-            //Produto produto = produtoServico.ObterProdutoPorId(id);
-            Produto produto = ObterProdutoPorId(id);
+            Produto produto = produtoServico.ObterProdutoPorId(id);
+            //Produto produto = ObterProdutoPorId(id);
             if (produto != null)
             {
                 return File(produto.Logotipo, produto.LogotipoMimeType);
@@ -200,8 +204,8 @@ namespace WebAppProjeto2023.Controllers
 
         public FileContentResult GetLogotipo2(long id)
         {
-            //Produto produto = produtoServico.ObterProdutoPorId(id);
-            Produto produto = ObterProdutoPorId(id);
+            Produto produto = produtoServico.ObterProdutoPorId(id);
+            //Produto produto = ObterProdutoPorId(id);
             if (produto != null)
             {
                 if (produto.NomeArquivo != null)
@@ -218,17 +222,7 @@ namespace WebAppProjeto2023.Controllers
         // GET: Produtos/Delete/5
         public ActionResult Delete(long? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Produto produto = context.Produtos.Where(p => p.ProdutoId == id).
-            Include(c => c.Categoria).Include(f => f.Fabricante).First();
-            if (produto == null)
-            {
-                return HttpNotFound();
-            }
-            return View(produto);
+            return ObterVisaoProdutoPorId(id);
         }
 
         // POST: Produtos/Delete/5
@@ -237,9 +231,7 @@ namespace WebAppProjeto2023.Controllers
         {
             try
             {
-                Produto produto = context.Produtos.Find(id);
-                context.Produtos.Remove(produto);
-                context.SaveChanges();
+                Produto produto = produtoServico.EliminarProdutoPorId(id);
                 TempData["Message"] = "Produto " + produto.Nome.ToUpper() + " foi removido";
                 return RedirectToAction("Index");
             }
