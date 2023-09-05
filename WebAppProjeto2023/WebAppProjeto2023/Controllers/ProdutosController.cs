@@ -124,10 +124,12 @@ namespace WebAppProjeto2023.Controllers
                     produtoServico.GravarProduto(produto);
                     return RedirectToAction("Index");
                 }
+                PopularViewBag();
                 return View(produto);
             }
             catch
             {
+                PopularViewBag();
                 return View(produto);
             }
         }
