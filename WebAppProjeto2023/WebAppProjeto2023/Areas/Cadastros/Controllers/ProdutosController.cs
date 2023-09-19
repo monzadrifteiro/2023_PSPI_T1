@@ -11,7 +11,7 @@ using Modelo.Cadastros;
 using Servico.Cadastros;
 using Servico.Tabelas;
 
-namespace WebAppProjeto2023.Controllers
+namespace WebAppProjeto2023.Areas.Cadastros.Controllers
 {
     public class ProdutosController : Controller
     {
