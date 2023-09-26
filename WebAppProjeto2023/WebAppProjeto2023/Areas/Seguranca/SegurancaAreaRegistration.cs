@@ -2,17 +2,17 @@
 
 namespace WebAppProjeto2023.Areas.Seguranca
 {
-    public class SegurancaAreaRegistration : AreaRegistration 
+    public class SegurancaAreaRegistration : AreaRegistration
     {
-        public override string AreaName 
+        public override string AreaName
         {
-            get 
+            get
             {
                 return "Seguranca";
             }
         }
 
-        public override void RegisterArea(AreaRegistrationContext context) 
+        public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapRoute(
                 "Seguranca_default",

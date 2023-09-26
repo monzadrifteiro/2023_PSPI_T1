@@ -2,14 +2,10 @@
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using WebAppProjeto2023.DAL;
 using WebAppProjeto2023.Infraestrutura;
 
-namespace WebAppProjeto2023.App_Start
+namespace WebAppProjeto2023
 {
     public class IdentityConfig
     {

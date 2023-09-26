@@ -2,17 +2,17 @@
 
 namespace WebAppProjeto2023.Areas.Cadastros
 {
-    public class CadastrosAreaRegistration : AreaRegistration 
+    public class CadastrosAreaRegistration : AreaRegistration
     {
-        public override string AreaName 
+        public override string AreaName
         {
-            get 
+            get
             {
                 return "Cadastros";
             }
         }
 
-        public override void RegisterArea(AreaRegistrationContext context) 
+        public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapRoute(
                 "Cadastros_default",

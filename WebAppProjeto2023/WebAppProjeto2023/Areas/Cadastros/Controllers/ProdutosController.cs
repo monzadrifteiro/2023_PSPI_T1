@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using WebAppProjeto2023.Models;
-using System.Data.Entity;
-using System.Net;
-using System.IO;
-using Modelo.Cadastros;
+﻿using Modelo.Cadastros;
 using Servico.Cadastros;
 using Servico.Tabelas;
+using System;
+using System.IO;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
 
 namespace WebAppProjeto2023.Areas.Cadastros.Controllers
 {

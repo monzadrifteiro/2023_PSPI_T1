@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using System.Web.Mvc;
 using WebAppProjeto2023.Models;
 
@@ -17,8 +14,8 @@ namespace WebAppProjeto2023.Controllers
             Home h = new Home();
             h.fabricantes = context.Fabricantes.OrderBy(c => c.Nome);
             h.categorias = context.Categorias.OrderBy(c => c.Nome);
-            
-            if((FabricanteId != null) && (FabricanteId != 0))
+
+            if ((FabricanteId != null) && (FabricanteId != 0))
             {
                 h.filtro = "Fabricante";
                 h.produtos = context.Produtos.Where(p => p.FabricanteId == FabricanteId).OrderBy(c => c.Nome);

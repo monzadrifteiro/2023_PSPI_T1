@@ -2,17 +2,17 @@
 
 namespace WebAppProjeto2023.Areas.Tabelas
 {
-    public class TabelasAreaRegistration : AreaRegistration 
+    public class TabelasAreaRegistration : AreaRegistration
     {
-        public override string AreaName 
+        public override string AreaName
         {
-            get 
+            get
             {
                 return "Tabelas";
             }
         }
 
-        public override void RegisterArea(AreaRegistrationContext context) 
+        public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapRoute(
                 "Tabelas_default",

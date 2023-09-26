@@ -1,13 +1,7 @@
 ﻿using Modelo.Cadastros;
 using Servico.Cadastros;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using WebAppProjeto2023.Models;
 
 namespace WebAppProjeto2023.Areas.Cadastros.Controllers
 {
