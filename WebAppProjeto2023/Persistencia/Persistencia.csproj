@@ -51,6 +51,7 @@
     <Compile Include="Contexts\EFContext.cs" />
     <Compile Include="DAL\Cadastros\FabricanteDAL.cs" />
     <Compile Include="DAL\Cadastros\ProdutoDAL.cs" />
+    <Compile Include="DAL\Carrinho\ItemPedidoDAL.cs" />
     <Compile Include="DAL\Tabelas\CategoriaDAL.cs" />
     <Compile Include="Migrations\202309051804393_InitialCreate.cs" />
     <Compile Include="Migrations\202309051804393_InitialCreate.Designer.cs">
